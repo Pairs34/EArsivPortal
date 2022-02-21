@@ -47,6 +47,7 @@ namespace EArsivPortal
                     MessageBox.Show("Başlangıç tarihi boş olamaz.");
                     return;
                 }
+
                 ChromeOptions driverOption = new ChromeOptions();
                 driverOption.AddArgument("--headless");
 
@@ -81,30 +82,31 @@ namespace EArsivPortal
                     return;
                 }
 
-                if (driver != null)
-                {
-                    driver.Quit();
-                }
-
                 var client = new RestClient("https://earsivportal.efatura.gov.tr/earsiv-services/dispatch");
                 client.Timeout = -1;
                 var request = new RestRequest(Method.POST);
                 request.AddHeader("Connection", "keep-alive");
                 request.AddHeader("Accept", "application/json, text/javascript, */*; q=0.01");
-                client.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36";
+                client.UserAgent =
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36";
                 request.AddHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
                 request.AddHeader("Sec-GPC", "1");
                 request.AddHeader("Origin", "https://earsivportal.efatura.gov.tr");
                 request.AddHeader("Sec-Fetch-Site", "same-origin");
                 request.AddHeader("Sec-Fetch-Mode", "cors");
                 request.AddHeader("Sec-Fetch-Dest", "empty");
-                request.AddHeader("Referer", $"https://earsivportal.efatura.gov.tr/index.jsp?token={token}&v=1645275913735");
+                request.AddHeader("Referer",
+                    $"https://earsivportal.efatura.gov.tr/index.jsp?token={token}&v=1645275913735");
                 request.AddHeader("Accept-Language", "tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7");
                 var date_request = new JObject();
                 date_request["baslangic"] = txtStartDate.Text;
-                date_request["bitis"] = String.IsNullOrWhiteSpace(txtEndDate.Text) == true ? txtStartDate.Text : txtEndDate.Text;
-                var body = $@"cmd=EARSIV_PORTAL_ADIMA_KESILEN_BELGELERI_GETIR&pageName=RG_ALICI_TASLAKLAR&token={token}&jp={HttpUtility.UrlEncode(date_request.ToString())}";
-                request.AddParameter("application/x-www-form-urlencoded; charset=UTF-8", body, ParameterType.RequestBody);
+                date_request["bitis"] = String.IsNullOrWhiteSpace(txtEndDate.Text) == true
+                    ? txtStartDate.Text
+                    : txtEndDate.Text;
+                var body =
+                    $@"cmd=EARSIV_PORTAL_ADIMA_KESILEN_BELGELERI_GETIR&pageName=RG_ALICI_TASLAKLAR&token={token}&jp={HttpUtility.UrlEncode(date_request.ToString())}";
+                request.AddParameter("application/x-www-form-urlencoded; charset=UTF-8", body,
+                    ParameterType.RequestBody);
                 IRestResponse response = client.Execute(request);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
@@ -118,6 +120,13 @@ namespace EArsivPortal
             catch (Exception exception)
             {
                 MessageBox.Show(exception.Message);
+            }
+            finally
+            {
+                if (driver != null)
+                {
+                    driver.Quit();
+                }
             }
         }
 
