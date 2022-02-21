@@ -127,14 +127,19 @@ namespace EArsivPortal
                 {
                     driver.Quit();
                 }
+
+                MessageBox.Show("Fatura Aktarımları Tamamlandı");
             }
         }
 
         private void frmMain_Load(object sender, EventArgs e)
         {
-            var fatura_json = File.ReadAllText(fatura_json_path);
-            aktarilan_faturalar = JsonConvert.DeserializeObject<Fatura>(fatura_json).data;
-            portalGrid.DataSource = aktarilan_faturalar;
+            if (File.Exists(fatura_json_path))
+            {
+                var fatura_json = File.ReadAllText(fatura_json_path);
+                aktarilan_faturalar = JsonConvert.DeserializeObject<Fatura>(fatura_json).data;
+                portalGrid.DataSource = aktarilan_faturalar;
+            }
         }
 
         private void btnExportData_Click(object sender, EventArgs e)
