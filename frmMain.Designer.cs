@@ -79,15 +79,18 @@ namespace EArsivPortal
             // 
             // portalGrid
             // 
+            this.portalGrid.AllowUserToAddRows = false;
+            this.portalGrid.AllowUserToOrderColumns = true;
             this.portalGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.portalGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.portalGrid.Location = new System.Drawing.Point(12, 41);
             this.portalGrid.Name = "portalGrid";
+            this.portalGrid.ReadOnly = true;
             this.portalGrid.RowHeadersWidth = 51;
             this.portalGrid.RowTemplate.Height = 29;
-            this.portalGrid.Size = new System.Drawing.Size(1000, 380);
+            this.portalGrid.Size = new System.Drawing.Size(999, 380);
             this.portalGrid.TabIndex = 4;
             // 
             // btnGetData
@@ -146,7 +149,7 @@ namespace EArsivPortal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1024, 431);
+            this.ClientSize = new System.Drawing.Size(1023, 431);
             this.Controls.Add(this.lblEndDate);
             this.Controls.Add(this.txtEndDate);
             this.Controls.Add(this.lblStartDate);
