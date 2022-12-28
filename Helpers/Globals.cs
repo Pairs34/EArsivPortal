@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Windows.Forms;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
@@ -50,6 +52,12 @@ namespace EArsivPortal.Helpers
                     }
                 }
             });
+        }
+        public static string ToQueryString(this NameValueCollection nameValueCollection)
+        {
+            NameValueCollection httpValueCollection = HttpUtility.ParseQueryString(String.Empty, Encoding.UTF8);
+            httpValueCollection.Add(nameValueCollection);
+            return httpValueCollection.ToString();
         }
 
         public static void ViewAsExcel<T>(List<T> coupons, string fileName = "temp.xlsx")
