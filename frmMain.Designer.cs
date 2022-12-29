@@ -31,10 +31,10 @@ namespace EArsivPortal
         {
             this.tabMain = new System.Windows.Forms.TabControl();
             this.tabEarsiv = new System.Windows.Forms.TabPage();
+            this.dtEndEarsiv = new System.Windows.Forms.DateTimePicker();
+            this.dtStartEarsiv = new System.Windows.Forms.DateTimePicker();
             this.lblEndDate = new System.Windows.Forms.Label();
-            this.txtEndDate = new System.Windows.Forms.TextBox();
             this.lblStartDate = new System.Windows.Forms.Label();
-            this.txtStartDate = new System.Windows.Forms.TextBox();
             this.btnExportEArsivData = new System.Windows.Forms.Button();
             this.btnGetEArsivData = new System.Windows.Forms.Button();
             this.portalGrid = new System.Windows.Forms.DataGridView();
@@ -45,12 +45,12 @@ namespace EArsivPortal
             this.tabIVD = new System.Windows.Forms.TabPage();
             this.dataResultIVD = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
-            this.txtIVDStopDate = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.txtIVDStartDate = new System.Windows.Forms.TextBox();
             this.btnExportIVD = new System.Windows.Forms.Button();
             this.btnGetDataIVD = new System.Windows.Forms.Button();
             this.txtIVDUrl = new System.Windows.Forms.TextBox();
+            this.dtIvdStartDate = new System.Windows.Forms.DateTimePicker();
+            this.dtIvdEndDate = new System.Windows.Forms.DateTimePicker();
             this.tabMain.SuspendLayout();
             this.tabEarsiv.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.portalGrid)).BeginInit();
@@ -71,10 +71,10 @@ namespace EArsivPortal
             // 
             // tabEarsiv
             // 
+            this.tabEarsiv.Controls.Add(this.dtEndEarsiv);
+            this.tabEarsiv.Controls.Add(this.dtStartEarsiv);
             this.tabEarsiv.Controls.Add(this.lblEndDate);
-            this.tabEarsiv.Controls.Add(this.txtEndDate);
             this.tabEarsiv.Controls.Add(this.lblStartDate);
-            this.tabEarsiv.Controls.Add(this.txtStartDate);
             this.tabEarsiv.Controls.Add(this.btnExportEArsivData);
             this.tabEarsiv.Controls.Add(this.btnGetEArsivData);
             this.tabEarsiv.Controls.Add(this.portalGrid);
@@ -90,23 +90,33 @@ namespace EArsivPortal
             this.tabEarsiv.Text = "EArşiv";
             this.tabEarsiv.UseVisualStyleBackColor = true;
             // 
+            // dtEndEarsiv
+            // 
+            this.dtEndEarsiv.CustomFormat = "dd/MM/yyyy";
+            this.dtEndEarsiv.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtEndEarsiv.Location = new System.Drawing.Point(673, 13);
+            this.dtEndEarsiv.Name = "dtEndEarsiv";
+            this.dtEndEarsiv.Size = new System.Drawing.Size(101, 27);
+            this.dtEndEarsiv.TabIndex = 23;
+            // 
+            // dtStartEarsiv
+            // 
+            this.dtStartEarsiv.CustomFormat = "dd/MM/yyyy";
+            this.dtStartEarsiv.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtStartEarsiv.Location = new System.Drawing.Point(476, 13);
+            this.dtStartEarsiv.Name = "dtStartEarsiv";
+            this.dtStartEarsiv.Size = new System.Drawing.Size(101, 27);
+            this.dtStartEarsiv.TabIndex = 22;
+            // 
             // lblEndDate
             // 
             this.lblEndDate.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.lblEndDate.AutoSize = true;
-            this.lblEndDate.Location = new System.Drawing.Point(583, 13);
+            this.lblEndDate.Location = new System.Drawing.Point(604, 13);
             this.lblEndDate.Name = "lblEndDate";
             this.lblEndDate.Size = new System.Drawing.Size(63, 20);
             this.lblEndDate.TabIndex = 21;
             this.lblEndDate.Text = "Bitiş Tar.";
-            // 
-            // txtEndDate
-            // 
-            this.txtEndDate.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.txtEndDate.Location = new System.Drawing.Point(652, 10);
-            this.txtEndDate.Name = "txtEndDate";
-            this.txtEndDate.Size = new System.Drawing.Size(98, 27);
-            this.txtEndDate.TabIndex = 20;
             // 
             // lblStartDate
             // 
@@ -117,14 +127,6 @@ namespace EArsivPortal
             this.lblStartDate.Size = new System.Drawing.Size(98, 20);
             this.lblStartDate.TabIndex = 19;
             this.lblStartDate.Text = "Başlangıç Tar.";
-            // 
-            // txtStartDate
-            // 
-            this.txtStartDate.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.txtStartDate.Location = new System.Drawing.Point(476, 10);
-            this.txtStartDate.Name = "txtStartDate";
-            this.txtStartDate.Size = new System.Drawing.Size(99, 27);
-            this.txtStartDate.TabIndex = 18;
             // 
             // btnExportEArsivData
             // 
@@ -204,11 +206,11 @@ namespace EArsivPortal
             // 
             // tabIVD
             // 
+            this.tabIVD.Controls.Add(this.dtIvdEndDate);
+            this.tabIVD.Controls.Add(this.dtIvdStartDate);
             this.tabIVD.Controls.Add(this.dataResultIVD);
             this.tabIVD.Controls.Add(this.label1);
-            this.tabIVD.Controls.Add(this.txtIVDStopDate);
             this.tabIVD.Controls.Add(this.label2);
-            this.tabIVD.Controls.Add(this.txtIVDStartDate);
             this.tabIVD.Controls.Add(this.btnExportIVD);
             this.tabIVD.Controls.Add(this.btnGetDataIVD);
             this.tabIVD.Controls.Add(this.txtIVDUrl);
@@ -243,14 +245,6 @@ namespace EArsivPortal
             this.label1.TabIndex = 25;
             this.label1.Text = "Bitiş Tar.";
             // 
-            // txtIVDStopDate
-            // 
-            this.txtIVDStopDate.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.txtIVDStopDate.Location = new System.Drawing.Point(722, 13);
-            this.txtIVDStopDate.Name = "txtIVDStopDate";
-            this.txtIVDStopDate.Size = new System.Drawing.Size(98, 27);
-            this.txtIVDStopDate.TabIndex = 24;
-            // 
             // label2
             // 
             this.label2.Anchor = System.Windows.Forms.AnchorStyles.Top;
@@ -260,14 +254,6 @@ namespace EArsivPortal
             this.label2.Size = new System.Drawing.Size(98, 20);
             this.label2.TabIndex = 23;
             this.label2.Text = "Başlangıç Tar.";
-            // 
-            // txtIVDStartDate
-            // 
-            this.txtIVDStartDate.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.txtIVDStartDate.Location = new System.Drawing.Point(546, 13);
-            this.txtIVDStartDate.Name = "txtIVDStartDate";
-            this.txtIVDStartDate.Size = new System.Drawing.Size(99, 27);
-            this.txtIVDStartDate.TabIndex = 22;
             // 
             // btnExportIVD
             // 
@@ -299,6 +285,24 @@ namespace EArsivPortal
             this.txtIVDUrl.Size = new System.Drawing.Size(428, 27);
             this.txtIVDUrl.TabIndex = 0;
             // 
+            // dtIvdStartDate
+            // 
+            this.dtIvdStartDate.CustomFormat = "yyyy-MM-dd";
+            this.dtIvdStartDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtIvdStartDate.Location = new System.Drawing.Point(546, 13);
+            this.dtIvdStartDate.Name = "dtIvdStartDate";
+            this.dtIvdStartDate.Size = new System.Drawing.Size(101, 27);
+            this.dtIvdStartDate.TabIndex = 27;
+            // 
+            // dtIvdEndDate
+            // 
+            this.dtIvdEndDate.CustomFormat = "yyyy-MM-dd";
+            this.dtIvdEndDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtIvdEndDate.Location = new System.Drawing.Point(719, 13);
+            this.dtIvdEndDate.Name = "dtIvdEndDate";
+            this.dtIvdEndDate.Size = new System.Drawing.Size(101, 27);
+            this.dtIvdEndDate.TabIndex = 28;
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -324,9 +328,7 @@ namespace EArsivPortal
         private System.Windows.Forms.TabControl tabMain;
         private System.Windows.Forms.TabPage tabEarsiv;
         private System.Windows.Forms.Label lblEndDate;
-        private System.Windows.Forms.TextBox txtEndDate;
         private System.Windows.Forms.Label lblStartDate;
-        private System.Windows.Forms.TextBox txtStartDate;
         private System.Windows.Forms.Button btnExportEArsivData;
         private System.Windows.Forms.Button btnGetEArsivData;
         private System.Windows.Forms.DataGridView portalGrid;
@@ -337,12 +339,14 @@ namespace EArsivPortal
         private System.Windows.Forms.TabPage tabIVD;
         private System.Windows.Forms.DataGridView dataResultIVD;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtIVDStopDate;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtIVDStartDate;
         private System.Windows.Forms.Button btnExportIVD;
         private System.Windows.Forms.Button btnGetDataIVD;
         private System.Windows.Forms.TextBox txtIVDUrl;
+        private System.Windows.Forms.DateTimePicker dtStartEarsiv;
+        private System.Windows.Forms.DateTimePicker dtEndEarsiv;
+        private System.Windows.Forms.DateTimePicker dtIvdStartDate;
+        private System.Windows.Forms.DateTimePicker dtIvdEndDate;
     }
 }
 

@@ -54,42 +54,27 @@ namespace EArsivPortal
         {
             try
             {
-                var parsedUrl = HttpUtility.ParseQueryString(txtIVDUrl.Text.Replace("https://ivd.gib.gov.tr/tvd_side/index.jsp?",""));
-
+                var parsedUrl = HttpUtility.ParseQueryString(txtIVDUrl.Text.Replace("https://ivd.gib.gov.tr/tvd_side/index.jsp?", ""));
+                List<Faturasonuc> faturaSonuc = new List<Faturasonuc>();
                 var token = parsedUrl.Get("token");
-
-                var jp = new JObject();
-                jp.Add("faturaTarihBas", txtIVDStartDate.Text);
-                jp.Add("faturaTarihSon", txtIVDStopDate.Text);
-                jp.Add("textBox", "");
-
-                var queryParams = System.Web.HttpUtility.ParseQueryString(string.Empty);
-                queryParams.Add("cmd", "EFaturaIslemleri_eFaturaGoruntuleSorgula");
-                queryParams.Add("pageName", "P_EFATURA");
-                queryParams.Add("token", token);
-                queryParams.Add("jp", JsonConvert.SerializeObject(jp));
-
-                var client = new RestClient("https://ivd.gib.gov.tr/tvd_server/dispatch");
-                client.Timeout = -1;
-                var request = new RestRequest(Method.POST);
-                request.AddHeader("Accept", "application/json, text/javascript, */*; q=0.01");
-                request.AddHeader("Accept-Language", "tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7");
-                request.AddHeader("Connection", "keep-alive");
-                request.AddHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-                request.AddHeader("Origin", "https://ivd.gib.gov.tr");
-                request.AddHeader("Referer", txtIVDUrl.Text);
-                client.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36";
-                request.AddParameter("application/x-www-form-urlencoded; charset=UTF-8", queryParams.ToString(), ParameterType.RequestBody);
-                IRestResponse response = client.Execute(request);
-                if (response.StatusCode == HttpStatusCode.OK)
+                var tarihFarki = dtIvdStartDate.Value.Subtract(dtIvdEndDate.Value);
+                if (tarihFarki.TotalDays >= 8)
                 {
-                    ivd_faturalar = JsonConvert.DeserializeObject<IVDFatura>(response.Content);
-                    dataResultIVD.DataSource = ivd_faturalar.Data.Faturasonuc;
+                    var parcaliGunler = Globals.GunlereBol(dtIvdStartDate.Value, dtIvdEndDate.Value);
+
+                    foreach (var gun in parcaliGunler)
+                    {
+                        var faturaResult = GetIVDData(token, gun.Key.ToString("yyyy-MM-dd"), gun.Value.ToString("yyyy-MM-dd"));
+                        faturaSonuc.AddRange(faturaResult);
+                    }
                 }
-                else
+                else if (tarihFarki.TotalDays <= 8)
                 {
-                    MessageBox.Show("Hata oluştu");
-                }
+                    var faturaResult = GetIVDData(token, dtIvdStartDate.Text, dtIvdEndDate.Text);
+                    faturaSonuc.AddRange(faturaResult);
+                }     
+                
+                dataResultIVD.DataSource = faturaSonuc;
             }
             catch (Exception err)
             {
@@ -97,11 +82,47 @@ namespace EArsivPortal
             }
         }
 
+        private List<Faturasonuc> GetIVDData(string token,string startDate, string endDate)
+        {
+            var jp = new JObject();
+            jp.Add("faturaTarihBas", startDate);
+            jp.Add("faturaTarihSon", endDate);
+            jp.Add("textBox", "");
+
+            var queryParams = System.Web.HttpUtility.ParseQueryString(string.Empty);
+            queryParams.Add("cmd", "EFaturaIslemleri_eFaturaGoruntuleSorgula");
+            queryParams.Add("pageName", "P_EFATURA");
+            queryParams.Add("token", token);
+            queryParams.Add("jp", JsonConvert.SerializeObject(jp));
+
+            var client = new RestClient("https://ivd.gib.gov.tr/tvd_server/dispatch");
+            client.Timeout = -1;
+            var request = new RestRequest(Method.POST);
+            request.AddHeader("Accept", "application/json, text/javascript, */*; q=0.01");
+            request.AddHeader("Accept-Language", "tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7");
+            request.AddHeader("Connection", "keep-alive");
+            request.AddHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+            request.AddHeader("Origin", "https://ivd.gib.gov.tr");
+            request.AddHeader("Referer", txtIVDUrl.Text);
+            client.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36";
+            request.AddParameter("application/x-www-form-urlencoded; charset=UTF-8", queryParams.ToString(), ParameterType.RequestBody);
+            IRestResponse response = client.Execute(request);
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                ivd_faturalar = JsonConvert.DeserializeObject<IVDFatura>(response.Content);
+                return ivd_faturalar.Data.Faturasonuc;
+            }
+            else
+            {
+                return new List<Faturasonuc>();
+            }
+        }
+
         private void btnGetEArsivData_Click(object sender, EventArgs e)
         {
             try
             {
-                if (String.IsNullOrWhiteSpace(txtStartDate.Text))
+                if (String.IsNullOrWhiteSpace(dtStartEarsiv.Text))
                 {
                     MessageBox.Show("Başlangıç tarihi boş olamaz.");
                     return;
@@ -158,11 +179,11 @@ namespace EArsivPortal
                     $"https://earsivportal.efatura.gov.tr/index.jsp?token={token}&v=1645275913735");
                 request.AddHeader("Accept-Language", "tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7");
                 var date_request = new JObject();
-                date_request["baslangic"] = txtStartDate.Text;
+                date_request["baslangic"] = dtStartEarsiv.Text;
                 date_request["hourlySearchInterval"] = "NONE";
-                date_request["bitis"] = String.IsNullOrWhiteSpace(txtEndDate.Text) == true
-                    ? txtStartDate.Text
-                    : txtEndDate.Text;
+                date_request["bitis"] = String.IsNullOrWhiteSpace(dtEndEarsiv.Text) == true
+                    ? dtStartEarsiv.Text
+                    : dtEndEarsiv.Text;
                 var body =
                     $@"cmd=EARSIV_PORTAL_ADIMA_KESILEN_BELGELERI_GETIR&pageName=RG_ALICI_TASLAKLAR&token={token}&jp={HttpUtility.UrlEncode(date_request.ToString())}";
                 request.AddParameter("application/x-www-form-urlencoded; charset=UTF-8", body,

@@ -60,6 +60,30 @@ namespace EArsivPortal.Helpers
             return httpValueCollection.ToString();
         }
 
+        public static Dictionary<DateTime,DateTime> GunlereBol(DateTime StartDateTime,DateTime EndDateTime, int gunSayisi = 8)
+        {
+            Dictionary<DateTime, DateTime> parcaliGunler = new Dictionary<DateTime, DateTime>();
+
+            DateTime startTime = StartDateTime;
+
+            DateTime breakTime = StartDateTime.Date.AddDays(8);
+            if (breakTime < StartDateTime)
+            {
+                breakTime = breakTime.AddDays(8);
+            }
+
+            while (breakTime < EndDateTime)
+            {
+                parcaliGunler.Add(startTime, breakTime);
+                startTime = breakTime;
+                breakTime = breakTime.AddDays(8);
+
+            }
+            parcaliGunler.Add(startTime, EndDateTime);
+
+
+            return parcaliGunler;
+        }
         public static void ViewAsExcel<T>(List<T> coupons, string fileName = "temp.xlsx")
         {
             try
