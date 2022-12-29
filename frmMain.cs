@@ -129,7 +129,7 @@ namespace EArsivPortal
                 }
 
                 ChromeOptions driverOption = new ChromeOptions();
-                //driverOption.AddArgument("--headless");
+                driverOption.AddArgument("--headless");
 
                 var driverService = ChromeDriverService.CreateDefaultService();
                 driverService.HideCommandPromptWindow = true;
