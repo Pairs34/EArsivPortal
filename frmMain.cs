@@ -31,7 +31,7 @@ namespace EArsivPortal
     {
         private IWebDriver driver;
         private List<Datum> aktarilan_faturalar;
-        private IVDFatura ivd_faturalar;
+        private List<Faturasonuc> ivd_faturalar = new List<Faturasonuc>();
 
         private string earsiv_fatura_json_path =
             AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "earsivfatura.json";
@@ -61,8 +61,8 @@ namespace EArsivPortal
         {
             try
             {
+                ivd_faturalar.Clear();
                 var parsedUrl = HttpUtility.ParseQueryString(txtIVDUrl.Text.Replace("https://ivd.gib.gov.tr/tvd_side/index.jsp?", ""));
-                List<Faturasonuc> faturaSonuc = new List<Faturasonuc>();
                 var token = parsedUrl.Get("token");
                 var tarihFarki = dtIvdEndDate.Value.Subtract(dtIvdStartDate.Value).TotalDays;
                 if (tarihFarki >= 8)
@@ -72,18 +72,18 @@ namespace EArsivPortal
                     foreach (var gun in parcaliGunler)
                     {
                         var faturaResult = GetIVDData(token, gun.Key.ToString("yyyy-MM-dd"), gun.Value.ToString("yyyy-MM-dd"));
-                        faturaSonuc.AddRange(faturaResult);
+                        ivd_faturalar.AddRange(faturaResult);
                     }
                 }
                 else if (tarihFarki <= 8)
                 {
-                    var faturaResult = GetIVDData(token, dtIvdStartDate.Text, dtIvdEndDate.Text);
-                    faturaSonuc.AddRange(faturaResult);
+                    var faturaResult = GetIVDData(token, dtIvdStartDate.Value.ToString("yyyy-MM-dd"), dtIvdEndDate.Value.ToString("yyyy-MM-dd"));
+                    ivd_faturalar.AddRange(faturaResult);
                 }
 
-                dataResultIVD.DataSource = faturaSonuc;
+                dataResultIVD.DataSource = ivd_faturalar;
 
-                File.WriteAllText(ivd_json_path, JsonConvert.SerializeObject(faturaSonuc));
+                File.WriteAllText(ivd_json_path, JsonConvert.SerializeObject(ivd_faturalar));
 
                 MessageBox.Show("Tarama tamamlandı");
             }
@@ -120,8 +120,8 @@ namespace EArsivPortal
             IRestResponse response = client.Execute(request);
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                ivd_faturalar = JsonConvert.DeserializeObject<IVDFatura>(response.Content);
-                return ivd_faturalar.Data.Faturasonuc;
+                var faturaresponse = JsonConvert.DeserializeObject<IVDFatura>(response.Content);
+                return faturaresponse.Data.Faturasonuc;
             }
             else
             {
@@ -231,7 +231,7 @@ namespace EArsivPortal
 
         private void btnExportIVD_Click(object sender, EventArgs e)
         {
-            Globals.ViewAsExcel(ivd_faturalar.Data.Faturasonuc);
+            Globals.ViewAsExcel(ivd_faturalar);
         }
 
         private void checkNonExistInvoice_Click_1(object sender, EventArgs e)
