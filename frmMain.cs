@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -20,6 +21,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using RestSharp;
 using Syncfusion.Licensing;
+using Syncfusion.XlsIO.FormatParser.FormatTokens;
 using WebDriverManager;
 using WebDriverManager.DriverConfigs.Impl;
 
@@ -59,10 +61,10 @@ namespace EArsivPortal
                 var parsedUrl = HttpUtility.ParseQueryString(txtIVDUrl.Text.Replace("https://ivd.gib.gov.tr/tvd_side/index.jsp?", ""));
                 List<Faturasonuc> faturaSonuc = new List<Faturasonuc>();
                 var token = parsedUrl.Get("token");
-                var tarihFarki = dtIvdStartDate.Value.Subtract(dtIvdEndDate.Value);
-                if (tarihFarki.TotalDays >= 8)
+                var tarihFarki = dtIvdEndDate.Value.Subtract(dtIvdStartDate.Value).TotalDays;
+                if (tarihFarki >= 8)
                 {
-                    var parcaliGunler = Globals.GunlereBol(dtIvdStartDate.Value, dtIvdEndDate.Value);
+                    var parcaliGunler = Globals.GunlereBol(dtIvdStartDate.Value, dtIvdEndDate.Value, 7);
 
                     foreach (var gun in parcaliGunler)
                     {
@@ -70,7 +72,7 @@ namespace EArsivPortal
                         faturaSonuc.AddRange(faturaResult);
                     }
                 }
-                else if (tarihFarki.TotalDays <= 8)
+                else if (tarihFarki <= 8)
                 {
                     var faturaResult = GetIVDData(token, dtIvdStartDate.Text, dtIvdEndDate.Text);
                     faturaSonuc.AddRange(faturaResult);
@@ -248,8 +250,8 @@ namespace EArsivPortal
             foreach (var earsivFatura in earsivObject.data)
             {
                 var isExist = ivdObject.First(
-                    x => //x.FaturaNo == earsivFatura.belgeNumarasi &&
-                    x.MukVkn == earsivFatura.saticiVknTckn);
+                    x => x.FaturaNo != earsivFatura.belgeNumarasi &&
+                    x.MukVkn != earsivFatura.saticiVknTckn);
 
                 if (isExist == null)
                 {

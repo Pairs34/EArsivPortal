@@ -97,7 +97,7 @@ namespace EArsivPortal
             // 
             this.dtEndEarsiv.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.dtEndEarsiv.CustomFormat = "dd/MM/yyyy";
-            this.dtEndEarsiv.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtEndEarsiv.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dtEndEarsiv.Location = new System.Drawing.Point(673, 13);
             this.dtEndEarsiv.Name = "dtEndEarsiv";
             this.dtEndEarsiv.Size = new System.Drawing.Size(101, 27);
@@ -117,7 +117,7 @@ namespace EArsivPortal
             // 
             this.dtStartEarsiv.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.dtStartEarsiv.CustomFormat = "dd/MM/yyyy";
-            this.dtStartEarsiv.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtStartEarsiv.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dtStartEarsiv.Location = new System.Drawing.Point(476, 13);
             this.dtStartEarsiv.Name = "dtStartEarsiv";
             this.dtStartEarsiv.Size = new System.Drawing.Size(101, 27);

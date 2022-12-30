@@ -66,17 +66,17 @@ namespace EArsivPortal.Helpers
 
             DateTime startTime = StartDateTime;
 
-            DateTime breakTime = StartDateTime.Date.AddDays(8);
+            DateTime breakTime = StartDateTime.Date.AddDays(gunSayisi);
             if (breakTime < StartDateTime)
             {
-                breakTime = breakTime.AddDays(8);
+                breakTime = breakTime.AddDays(gunSayisi);
             }
 
             while (breakTime < EndDateTime)
             {
                 parcaliGunler.Add(startTime, breakTime);
                 startTime = breakTime;
-                breakTime = breakTime.AddDays(8);
+                breakTime = breakTime.AddDays(gunSayisi);
 
             }
             parcaliGunler.Add(startTime, EndDateTime);
