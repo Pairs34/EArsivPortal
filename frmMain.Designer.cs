@@ -95,6 +95,7 @@ namespace EArsivPortal
             // 
             // dtEndEarsiv
             // 
+            this.dtEndEarsiv.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.dtEndEarsiv.CustomFormat = "dd/MM/yyyy";
             this.dtEndEarsiv.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dtEndEarsiv.Location = new System.Drawing.Point(673, 13);
@@ -106,7 +107,7 @@ namespace EArsivPortal
             // 
             this.lblUserName.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.lblUserName.AutoSize = true;
-            this.lblUserName.Location = new System.Drawing.Point(14, 17);
+            this.lblUserName.Location = new System.Drawing.Point(14, 13);
             this.lblUserName.Name = "lblUserName";
             this.lblUserName.Size = new System.Drawing.Size(92, 20);
             this.lblUserName.TabIndex = 12;
@@ -114,6 +115,7 @@ namespace EArsivPortal
             // 
             // dtStartEarsiv
             // 
+            this.dtStartEarsiv.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.dtStartEarsiv.CustomFormat = "dd/MM/yyyy";
             this.dtStartEarsiv.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dtStartEarsiv.Location = new System.Drawing.Point(476, 13);
@@ -227,6 +229,7 @@ namespace EArsivPortal
             // 
             // dtIvdEndDate
             // 
+            this.dtIvdEndDate.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.dtIvdEndDate.CustomFormat = "yyyy-MM-dd";
             this.dtIvdEndDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dtIvdEndDate.Location = new System.Drawing.Point(719, 13);
@@ -236,6 +239,7 @@ namespace EArsivPortal
             // 
             // dtIvdStartDate
             // 
+            this.dtIvdStartDate.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.dtIvdStartDate.CustomFormat = "yyyy-MM-dd";
             this.dtIvdStartDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dtIvdStartDate.Location = new System.Drawing.Point(546, 13);
