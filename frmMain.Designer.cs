@@ -32,6 +32,7 @@ namespace EArsivPortal
             this.tabMain = new System.Windows.Forms.TabControl();
             this.tabEarsiv = new System.Windows.Forms.TabPage();
             this.dtEndEarsiv = new System.Windows.Forms.DateTimePicker();
+            this.lblUserName = new System.Windows.Forms.Label();
             this.dtStartEarsiv = new System.Windows.Forms.DateTimePicker();
             this.lblEndDate = new System.Windows.Forms.Label();
             this.lblStartDate = new System.Windows.Forms.Label();
@@ -40,22 +41,24 @@ namespace EArsivPortal
             this.portalGrid = new System.Windows.Forms.DataGridView();
             this.lblPassword = new System.Windows.Forms.Label();
             this.txtPassword = new System.Windows.Forms.TextBox();
-            this.lblUserName = new System.Windows.Forms.Label();
             this.txtUserName = new System.Windows.Forms.TextBox();
             this.tabIVD = new System.Windows.Forms.TabPage();
+            this.dtIvdEndDate = new System.Windows.Forms.DateTimePicker();
+            this.dtIvdStartDate = new System.Windows.Forms.DateTimePicker();
             this.dataResultIVD = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.btnExportIVD = new System.Windows.Forms.Button();
             this.btnGetDataIVD = new System.Windows.Forms.Button();
             this.txtIVDUrl = new System.Windows.Forms.TextBox();
-            this.dtIvdStartDate = new System.Windows.Forms.DateTimePicker();
-            this.dtIvdEndDate = new System.Windows.Forms.DateTimePicker();
+            this.menu = new System.Windows.Forms.MenuStrip();
+            this.checkNonExistInvoice = new System.Windows.Forms.ToolStripMenuItem();
             this.tabMain.SuspendLayout();
             this.tabEarsiv.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.portalGrid)).BeginInit();
             this.tabIVD.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataResultIVD)).BeginInit();
+            this.menu.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabMain
@@ -63,15 +66,16 @@ namespace EArsivPortal
             this.tabMain.Controls.Add(this.tabEarsiv);
             this.tabMain.Controls.Add(this.tabIVD);
             this.tabMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabMain.Location = new System.Drawing.Point(0, 0);
+            this.tabMain.Location = new System.Drawing.Point(0, 28);
             this.tabMain.Name = "tabMain";
             this.tabMain.SelectedIndex = 0;
-            this.tabMain.Size = new System.Drawing.Size(1084, 500);
+            this.tabMain.Size = new System.Drawing.Size(1084, 472);
             this.tabMain.TabIndex = 0;
             // 
             // tabEarsiv
             // 
             this.tabEarsiv.Controls.Add(this.dtEndEarsiv);
+            this.tabEarsiv.Controls.Add(this.lblUserName);
             this.tabEarsiv.Controls.Add(this.dtStartEarsiv);
             this.tabEarsiv.Controls.Add(this.lblEndDate);
             this.tabEarsiv.Controls.Add(this.lblStartDate);
@@ -80,12 +84,11 @@ namespace EArsivPortal
             this.tabEarsiv.Controls.Add(this.portalGrid);
             this.tabEarsiv.Controls.Add(this.lblPassword);
             this.tabEarsiv.Controls.Add(this.txtPassword);
-            this.tabEarsiv.Controls.Add(this.lblUserName);
             this.tabEarsiv.Controls.Add(this.txtUserName);
             this.tabEarsiv.Location = new System.Drawing.Point(4, 29);
             this.tabEarsiv.Name = "tabEarsiv";
             this.tabEarsiv.Padding = new System.Windows.Forms.Padding(3);
-            this.tabEarsiv.Size = new System.Drawing.Size(1076, 467);
+            this.tabEarsiv.Size = new System.Drawing.Size(1076, 439);
             this.tabEarsiv.TabIndex = 0;
             this.tabEarsiv.Text = "EArşiv";
             this.tabEarsiv.UseVisualStyleBackColor = true;
@@ -98,6 +101,16 @@ namespace EArsivPortal
             this.dtEndEarsiv.Name = "dtEndEarsiv";
             this.dtEndEarsiv.Size = new System.Drawing.Size(101, 27);
             this.dtEndEarsiv.TabIndex = 23;
+            // 
+            // lblUserName
+            // 
+            this.lblUserName.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.lblUserName.AutoSize = true;
+            this.lblUserName.Location = new System.Drawing.Point(14, 17);
+            this.lblUserName.Name = "lblUserName";
+            this.lblUserName.Size = new System.Drawing.Size(92, 20);
+            this.lblUserName.TabIndex = 12;
+            this.lblUserName.Text = "Kullanıcı Adı";
             // 
             // dtStartEarsiv
             // 
@@ -163,7 +176,7 @@ namespace EArsivPortal
             this.portalGrid.ReadOnly = true;
             this.portalGrid.RowHeadersWidth = 51;
             this.portalGrid.RowTemplate.Height = 29;
-            this.portalGrid.Size = new System.Drawing.Size(1060, 409);
+            this.portalGrid.Size = new System.Drawing.Size(1060, 381);
             this.portalGrid.TabIndex = 15;
             // 
             // lblPassword
@@ -184,16 +197,6 @@ namespace EArsivPortal
             this.txtPassword.Size = new System.Drawing.Size(100, 27);
             this.txtPassword.TabIndex = 13;
             this.txtPassword.Text = "081752";
-            // 
-            // lblUserName
-            // 
-            this.lblUserName.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.lblUserName.AutoSize = true;
-            this.lblUserName.Location = new System.Drawing.Point(14, 13);
-            this.lblUserName.Name = "lblUserName";
-            this.lblUserName.Size = new System.Drawing.Size(92, 20);
-            this.lblUserName.TabIndex = 12;
-            this.lblUserName.Text = "Kullanıcı Adı";
             // 
             // txtUserName
             // 
@@ -217,10 +220,28 @@ namespace EArsivPortal
             this.tabIVD.Location = new System.Drawing.Point(4, 29);
             this.tabIVD.Name = "tabIVD";
             this.tabIVD.Padding = new System.Windows.Forms.Padding(3);
-            this.tabIVD.Size = new System.Drawing.Size(1076, 467);
+            this.tabIVD.Size = new System.Drawing.Size(1076, 439);
             this.tabIVD.TabIndex = 1;
             this.tabIVD.Text = "VergiDairesi";
             this.tabIVD.UseVisualStyleBackColor = true;
+            // 
+            // dtIvdEndDate
+            // 
+            this.dtIvdEndDate.CustomFormat = "yyyy-MM-dd";
+            this.dtIvdEndDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtIvdEndDate.Location = new System.Drawing.Point(719, 13);
+            this.dtIvdEndDate.Name = "dtIvdEndDate";
+            this.dtIvdEndDate.Size = new System.Drawing.Size(101, 27);
+            this.dtIvdEndDate.TabIndex = 28;
+            // 
+            // dtIvdStartDate
+            // 
+            this.dtIvdStartDate.CustomFormat = "yyyy-MM-dd";
+            this.dtIvdStartDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtIvdStartDate.Location = new System.Drawing.Point(546, 13);
+            this.dtIvdStartDate.Name = "dtIvdStartDate";
+            this.dtIvdStartDate.Size = new System.Drawing.Size(101, 27);
+            this.dtIvdStartDate.TabIndex = 27;
             // 
             // dataResultIVD
             // 
@@ -232,7 +253,7 @@ namespace EArsivPortal
             this.dataResultIVD.Name = "dataResultIVD";
             this.dataResultIVD.RowHeadersWidth = 51;
             this.dataResultIVD.RowTemplate.Height = 29;
-            this.dataResultIVD.Size = new System.Drawing.Size(1060, 406);
+            this.dataResultIVD.Size = new System.Drawing.Size(1060, 380);
             this.dataResultIVD.TabIndex = 26;
             // 
             // label1
@@ -285,23 +306,23 @@ namespace EArsivPortal
             this.txtIVDUrl.Size = new System.Drawing.Size(428, 27);
             this.txtIVDUrl.TabIndex = 0;
             // 
-            // dtIvdStartDate
+            // menu
             // 
-            this.dtIvdStartDate.CustomFormat = "yyyy-MM-dd";
-            this.dtIvdStartDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtIvdStartDate.Location = new System.Drawing.Point(546, 13);
-            this.dtIvdStartDate.Name = "dtIvdStartDate";
-            this.dtIvdStartDate.Size = new System.Drawing.Size(101, 27);
-            this.dtIvdStartDate.TabIndex = 27;
+            this.menu.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.menu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.checkNonExistInvoice});
+            this.menu.Location = new System.Drawing.Point(0, 0);
+            this.menu.Name = "menu";
+            this.menu.Size = new System.Drawing.Size(1084, 28);
+            this.menu.TabIndex = 1;
+            this.menu.Text = "menuStrip1";
             // 
-            // dtIvdEndDate
+            // checkNonExistInvoice
             // 
-            this.dtIvdEndDate.CustomFormat = "yyyy-MM-dd";
-            this.dtIvdEndDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtIvdEndDate.Location = new System.Drawing.Point(719, 13);
-            this.dtIvdEndDate.Name = "dtIvdEndDate";
-            this.dtIvdEndDate.Size = new System.Drawing.Size(101, 27);
-            this.dtIvdEndDate.TabIndex = 28;
+            this.checkNonExistInvoice.Name = "checkNonExistInvoice";
+            this.checkNonExistInvoice.Size = new System.Drawing.Size(160, 24);
+            this.checkNonExistInvoice.Text = "Eksik Fatura Kontrolü";
+            this.checkNonExistInvoice.Click += new System.EventHandler(this.checkNonExistInvoice_Click_1);
             // 
             // frmMain
             // 
@@ -309,6 +330,7 @@ namespace EArsivPortal
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1084, 500);
             this.Controls.Add(this.tabMain);
+            this.Controls.Add(this.menu);
             this.Name = "frmMain";
             this.Text = "EArşiv Portal";
             this.Load += new System.EventHandler(this.frmMain_Load);
@@ -319,7 +341,10 @@ namespace EArsivPortal
             this.tabIVD.ResumeLayout(false);
             this.tabIVD.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataResultIVD)).EndInit();
+            this.menu.ResumeLayout(false);
+            this.menu.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -347,6 +372,8 @@ namespace EArsivPortal
         private System.Windows.Forms.DateTimePicker dtEndEarsiv;
         private System.Windows.Forms.DateTimePicker dtIvdStartDate;
         private System.Windows.Forms.DateTimePicker dtIvdEndDate;
+        private System.Windows.Forms.MenuStrip menu;
+        private System.Windows.Forms.ToolStripMenuItem checkNonExistInvoice;
     }
 }
 

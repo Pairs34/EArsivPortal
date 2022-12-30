@@ -31,8 +31,10 @@ namespace EArsivPortal
         private List<Datum> aktarilan_faturalar;
         private IVDFatura ivd_faturalar;
 
-        private string fatura_json_path =
-            AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "fatura.json";
+        private string earsiv_fatura_json_path =
+            AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "earsivfatura.json";
+        private string ivd_json_path =
+            AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "ivdfatura.json";
         public frmMain()
         {
             InitializeComponent();
@@ -42,9 +44,9 @@ namespace EArsivPortal
 
         private void frmMain_Load(object sender, EventArgs e)
         {
-            if (File.Exists(fatura_json_path))
+            if (File.Exists(earsiv_fatura_json_path))
             {
-                var fatura_json = File.ReadAllText(fatura_json_path);
+                var fatura_json = File.ReadAllText(earsiv_fatura_json_path);
                 aktarilan_faturalar = JsonConvert.DeserializeObject<Fatura>(fatura_json).data;
                 portalGrid.DataSource = aktarilan_faturalar;
             }
@@ -75,6 +77,10 @@ namespace EArsivPortal
                 }     
                 
                 dataResultIVD.DataSource = faturaSonuc;
+
+                File.WriteAllText(ivd_json_path, JsonConvert.SerializeObject(faturaSonuc));
+
+                MessageBox.Show("Tarama tamamlandı");
             }
             catch (Exception err)
             {
@@ -193,7 +199,7 @@ namespace EArsivPortal
                 {
                     Fatura content = JsonConvert.DeserializeObject<Fatura>(response.Content);
                     aktarilan_faturalar = content.data;
-                    File.WriteAllText(fatura_json_path, response.Content);
+                    File.WriteAllText(earsiv_fatura_json_path, response.Content);
                     Globals.ViewAsExcel(content.data);
                     portalGrid.DataSource = content.data;
                 }
@@ -221,6 +227,49 @@ namespace EArsivPortal
         private void btnExportIVD_Click(object sender, EventArgs e)
         {
             Globals.ViewAsExcel(ivd_faturalar.Data.Faturasonuc);
+        }
+
+        private void checkNonExistInvoice_Click_1(object sender, EventArgs e)
+        {
+            if (!File.Exists(earsiv_fatura_json_path) && !File.Exists(ivd_json_path))
+            {
+                MessageBox.Show("Faturalar oluşturulmamış , lütfen önce faturaları her iki sitedende çekiniz.");
+                return;
+            }
+
+            var earsivFaturalar = File.ReadAllText(earsiv_fatura_json_path);
+            var ivdFaturalar = File.ReadAllText(ivd_json_path);
+
+            var earsivObject = JsonConvert.DeserializeObject<Fatura>(earsivFaturalar);//Datum
+            var ivdObject = JsonConvert.DeserializeObject<List<Faturasonuc>>(ivdFaturalar);
+
+            List<EksikFatura> eksikFaturalar = new List<EksikFatura>();
+
+            foreach (var earsivFatura in earsivObject.data)
+            {
+                var isExist = ivdObject.First(
+                    x => //x.FaturaNo == earsivFatura.belgeNumarasi &&
+                    x.MukVkn == earsivFatura.saticiVknTckn);
+
+                if (isExist == null)
+                {
+                    eksikFaturalar.Add(new EksikFatura
+                    {
+                        FaturaNo = earsivFatura.belgeNumarasi,
+                        FirmaAdı = earsivFatura.saticiUnvanAdSoyad,
+                        Tutar = isExist.Toplam,
+                        ParaBirimi = isExist.ParaBirimi,
+                        FaturaTarihi = isExist.Tarih.ToString("yyyy-MM-dd"),
+                    });
+                }
+            }
+
+            MessageBox.Show($"Eksik Fatura Kontrolü Tamamlandı.Earşiv Sayısı = {earsivObject.data.Count} , IVDSayısı = {ivdObject.Count} {eksikFaturalar.Count} adet fatura eksik.");
+
+            if (eksikFaturalar.Count > 0)
+            {
+                Globals.ViewAsExcel(eksikFaturalar, "eksikfaturalar.xlsx");
+            }
         }
     }
 }
