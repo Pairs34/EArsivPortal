@@ -52,6 +52,9 @@ namespace EArsivPortal
                 aktarilan_faturalar = JsonConvert.DeserializeObject<Fatura>(fatura_json).data;
                 portalGrid.DataSource = aktarilan_faturalar;
             }
+
+            dtIvdEndDate.Value = DateTime.Now.GetLastDayOfMonth();
+            dtEndEarsiv.Value = DateTime.Now.GetLastDayOfMonth();
         }
 
         private void btnGetDataIVD_Click(object sender, EventArgs e)
@@ -76,8 +79,8 @@ namespace EArsivPortal
                 {
                     var faturaResult = GetIVDData(token, dtIvdStartDate.Text, dtIvdEndDate.Text);
                     faturaSonuc.AddRange(faturaResult);
-                }     
-                
+                }
+
                 dataResultIVD.DataSource = faturaSonuc;
 
                 File.WriteAllText(ivd_json_path, JsonConvert.SerializeObject(faturaSonuc));
@@ -90,7 +93,7 @@ namespace EArsivPortal
             }
         }
 
-        private List<Faturasonuc> GetIVDData(string token,string startDate, string endDate)
+        private List<Faturasonuc> GetIVDData(string token, string startDate, string endDate)
         {
             var jp = new JObject();
             jp.Add("faturaTarihBas", startDate);
@@ -249,19 +252,18 @@ namespace EArsivPortal
 
             foreach (var earsivFatura in earsivObject.data)
             {
-                var isExist = ivdObject.First(
-                    x => x.FaturaNo != earsivFatura.belgeNumarasi &&
-                    x.MukVkn != earsivFatura.saticiVknTckn);
-
+                var isExist = ivdObject.FirstOrDefault(x => x.FaturaNo == earsivFatura.belgeNumarasi && x.MukVkn == earsivFatura.saticiVknTckn);
                 if (isExist == null)
                 {
                     eksikFaturalar.Add(new EksikFatura
                     {
                         FaturaNo = earsivFatura.belgeNumarasi,
                         FirmaAdı = earsivFatura.saticiUnvanAdSoyad,
-                        Tutar = isExist.Toplam,
-                        ParaBirimi = isExist.ParaBirimi,
-                        FaturaTarihi = isExist.Tarih.ToString("yyyy-MM-dd"),
+                        FaturaTarihi = earsivFatura.belgeTarihi,
+                        IptalItiraz = earsivFatura.iptalItiraz,
+                        OnayDurumu = earsivFatura.onayDurumu,
+                        TalepDurumu = earsivFatura.talepDurum,
+                        VKNTCK = earsivFatura.saticiVknTckn
                     });
                 }
             }
@@ -272,6 +274,10 @@ namespace EArsivPortal
             {
                 Globals.ViewAsExcel(eksikFaturalar, "eksikfaturalar.xlsx");
             }
+        }
+
+        private void tabMain_TabIndexChanged(object sender, EventArgs e)
+        {
         }
     }
 }

@@ -10,8 +10,10 @@ namespace EArsivPortal.Model
     {
         public string FirmaAdı { get; set; }
         public string FaturaNo { get; set; }
-        public string Tutar { get; set; }
-        public string ParaBirimi { get; set; }
+        public string VKNTCK { get; set; }
+        public string OnayDurumu { get; set; }
+        public string IptalItiraz { get; set; }
+        public string TalepDurumu { get; set; }
         public string FaturaTarihi { get; set; }
     }
 }

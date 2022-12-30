@@ -59,7 +59,10 @@ namespace EArsivPortal.Helpers
             httpValueCollection.Add(nameValueCollection);
             return httpValueCollection.ToString();
         }
-
+        public static DateTime GetLastDayOfMonth(this DateTime dateTime)
+        {
+            return new DateTime(dateTime.Year, dateTime.Month, DateTime.DaysInMonth(dateTime.Year, dateTime.Month));
+        }
         public static Dictionary<DateTime,DateTime> GunlereBol(DateTime StartDateTime,DateTime EndDateTime, int gunSayisi = 8)
         {
             Dictionary<DateTime, DateTime> parcaliGunler = new Dictionary<DateTime, DateTime>();
@@ -75,10 +78,10 @@ namespace EArsivPortal.Helpers
             while (breakTime < EndDateTime)
             {
                 parcaliGunler.Add(startTime, breakTime);
-                startTime = breakTime;
+                startTime = breakTime.AddDays(1);
                 breakTime = breakTime.AddDays(gunSayisi);
-
             }
+
             parcaliGunler.Add(startTime, EndDateTime);
 
 
