@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using EArsivPortal.Helpers;
 using EArsivPortal.Model;
 using Newtonsoft.Json;
@@ -278,6 +279,156 @@ namespace EArsivPortal
 
         private void tabMain_TabIndexChanged(object sender, EventArgs e)
         {
+        }
+
+        private void btnBynGetFiles_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var token = GetBtnLoginToken(txtBynUsername.Text, txtBynParola.Text, txtBynSifre.Text);
+
+                var bynQueryResult = QueryByn(dtBynStartDate.Value, dtBynEndDate.Value, token);
+
+                HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+                doc.LoadHtml(bynQueryResult);
+                var thkNodes = doc.DocumentNode.SelectNodes("//td[contains(@id,'thkPDF')]");
+                var bynNodes = doc.DocumentNode.SelectNodes("//td[contains(@id,'bynPDF')]");
+
+                var tahakkuklar = thkNodes.Select(x => x.Id).ToList();
+                var beyannameler = bynNodes.Select(x => x.Id).ToList();
+
+                
+
+                foreach (var byn in beyannameler)
+                {
+                    var bynDownUrl = "https://ebeyanname.gib.gov.tr/dispatch?";
+
+                    var queryParams = System.Web.HttpUtility.ParseQueryString(string.Empty);
+                    queryParams.Add("cmd", "IMAJ");
+                    queryParams.Add("subcmd", "BEYANNAMEGORUNTULE");
+                    queryParams.Add("TOKEN", token);
+                    queryParams.Add("beyannameOid", byn.Replace("bynPDF",""));
+                    queryParams.Add("inline", "true");
+
+                    bynDownUrl += queryParams.ToString();
+
+                    Console.WriteLine($"Download = {bynDownUrl}");
+                }
+
+                foreach (var thk in tahakkuklar)
+                {
+                    var thkDownUrl = "https://ebeyanname.gib.gov.tr/dispatch?";
+
+                    var queryParams = System.Web.HttpUtility.ParseQueryString(string.Empty);
+                    queryParams.Add("cmd", "IMAJ");
+                    queryParams.Add("subcmd", "BEYANNAMEGORUNTULE");
+                    queryParams.Add("TOKEN", token);
+                    queryParams.Add("beyannameOid", thk.Replace("thkPDF", ""));
+                    queryParams.Add("tahakkukOid", thk.Replace("thkPDF", ""));
+                    queryParams.Add("inline", "true");
+
+                    thkDownUrl += queryParams.ToString();
+
+                    Console.WriteLine($"Download = {thkDownUrl}");
+                }
+
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message);
+            }
+        }
+
+        private string GetBtnLoginToken(string username,string password,string sifre)
+        {
+            try
+            {
+                var client = new RestClient("https://ebeyanname.gib.gov.tr/eyeks");
+                client.Timeout = -1;
+                var request = new RestRequest(Method.POST);
+                client.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:108.0) Gecko/20100101 Firefox/108.0";
+                request.AddHeader("Accept", "*/*");
+                request.AddHeader("Accept-Language", "tr-TR,tr;q=0.8,en-US;q=0.5,en;q=0.3");
+                request.AddHeader("Accept-Encoding", "gzip, deflate, br");
+                request.AddHeader("X-Requested-With", "XMLHttpRequest");
+                request.AddHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+                request.AddHeader("Origin", "https://ebeyanname.gib.gov.tr");
+                request.AddHeader("DNT", "1");
+                request.AddHeader("Connection", "keep-alive");
+                request.AddHeader("Referer", "https://ebeyanname.gib.gov.tr/giris.html");
+                request.AddHeader("Sec-Fetch-Dest", "empty");
+                request.AddHeader("Sec-Fetch-Mode", "cors");
+                request.AddHeader("Sec-Fetch-Site", "same-origin");
+                var body = $@"username={username}&password2={password}&password1={sifre}&eyekscommand=ajaxlogin&redirectionpath=context1";
+                request.AddParameter("application/x-www-form-urlencoded; charset=UTF-8", body, ParameterType.RequestBody);
+                IRestResponse response = client.Execute(request);
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var content = response.Content;
+
+                    XElement element = XElement.Parse(content);
+                    var ajaxlogin = element.Elements().FirstOrDefault(x => x.Name.LocalName == "TOKEN");
+                    return ajaxlogin.Value;
+                }
+                else
+                {
+                    return String.Empty;
+                }
+            }
+            catch (Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+        private string QueryByn(DateTime baslangicDate, DateTime bitisDate, string token)
+        {
+            try
+            {
+                var baslangicTarih = baslangicDate.AddMonths(1).ToString("yyyyMMdd");
+                var bitisTarih = bitisDate.AddMonths(1).ToString("yyyyMMdd");
+
+                var queryParams = System.Web.HttpUtility.ParseQueryString(string.Empty);
+                queryParams.Add("cmd", "BEYANNAMELISTESI");
+                queryParams.Add("sorguTipiP", "1");
+                queryParams.Add("donemBasYil", baslangicDate.ToString("yyyy"));
+                queryParams.Add("donemBasAy", baslangicDate.ToString("MM"));
+                queryParams.Add("donemBitYil", bitisDate.ToString("yyyy"));
+                queryParams.Add("donemBitAy", bitisDate.ToString("MM"));
+                queryParams.Add("sorguTipiZ", "1");
+                queryParams.Add("bitisTarihi", bitisTarih);
+                queryParams.Add("baslangicTarihi", baslangicTarih);
+                queryParams.Add("sorguTipiD", "1");
+                queryParams.Add("durum", "2");
+                queryParams.Add("TOKEN", token);
+
+                var client = new RestClient("https://ebeyanname.gib.gov.tr/dispatch");
+                client.Timeout = -1;
+                var request = new RestRequest(Method.POST);
+                client.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:108.0) Gecko/20100101 Firefox/108.0";
+                request.AddHeader("Accept", "*/*");
+                request.AddHeader("Accept-Language", "tr-TR,tr;q=0.8,en-US;q=0.5,en;q=0.3");
+                request.AddHeader("Accept-Encoding", "gzip, deflate, br");
+                request.AddHeader("X-Requested-With", "XMLHttpRequest");
+                request.AddHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+                request.AddHeader("Origin", "https://ebeyanname.gib.gov.tr");
+                request.AddHeader("Connection", "keep-alive");
+                request.AddHeader("Referer", $"https://ebeyanname.gib.gov.tr/dispatch?cmd=LOGIN&TOKEN={token}&CHANGEPWD=TRUE");
+                request.AddParameter("application/x-www-form-urlencoded; charset=UTF-8", queryParams.ToString(), ParameterType.RequestBody);
+                IRestResponse response = client.Execute(request);
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    return response.Content;
+                }
+                else
+                {
+                    return String.Empty;
+                }
+            }
+            catch (Exception err)
+            {
+                return err.Message;
+            }
         }
     }
 }
