@@ -65,6 +65,7 @@ namespace EArsivPortal
             this.btnBynGetFiles = new System.Windows.Forms.Button();
             this.menu = new System.Windows.Forms.MenuStrip();
             this.checkNonExistInvoice = new System.Windows.Forms.ToolStripMenuItem();
+            this.folderSelector = new System.Windows.Forms.FolderBrowserDialog();
             this.tabMain.SuspendLayout();
             this.tabEarsiv.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.portalGrid)).BeginInit();
@@ -537,6 +538,7 @@ namespace EArsivPortal
         private System.Windows.Forms.Label lblBynParola;
         private System.Windows.Forms.TextBox txtBynParola;
         private System.Windows.Forms.TextBox txtBynUsername;
+        private System.Windows.Forms.FolderBrowserDialog folderSelector;
     }
 }
 

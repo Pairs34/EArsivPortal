@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -297,41 +298,73 @@ namespace EArsivPortal
                 var tahakkuklar = thkNodes.Select(x => x.Id).ToList();
                 var beyannameler = bynNodes.Select(x => x.Id).ToList();
 
-                
 
-                foreach (var byn in beyannameler)
+                List<string> downloadErrorOidsByn = new List<string>();
+                List<string> downloadErrorOidsThk = new List<string>();
+                DialogResult selectedFolder = folderSelector.ShowDialog();
+                if (selectedFolder == DialogResult.OK && !String.IsNullOrEmpty(folderSelector.SelectedPath))
                 {
-                    var bynDownUrl = "https://ebeyanname.gib.gov.tr/dispatch?";
+                    foreach (var byn in beyannameler)
+                    {
+                        var bynDownUrl = "https://ebeyanname.gib.gov.tr/dispatch?";
 
-                    var queryParams = System.Web.HttpUtility.ParseQueryString(string.Empty);
-                    queryParams.Add("cmd", "IMAJ");
-                    queryParams.Add("subcmd", "BEYANNAMEGORUNTULE");
-                    queryParams.Add("TOKEN", token);
-                    queryParams.Add("beyannameOid", byn.Replace("bynPDF",""));
-                    queryParams.Add("inline", "true");
+                        var queryParams = System.Web.HttpUtility.ParseQueryString(string.Empty);
+                        queryParams.Add("cmd", "IMAJ");
+                        queryParams.Add("subcmd", "BEYANNAMEGORUNTULE");
+                        queryParams.Add("TOKEN", token);
+                        queryParams.Add("beyannameOid", byn.Replace("bynPDF", ""));
+                        queryParams.Add("inline", "true");
 
-                    bynDownUrl += queryParams.ToString();
+                        bynDownUrl += queryParams.ToString();
 
-                    Console.WriteLine($"Download = {bynDownUrl}");
+                        try
+                        {
+                            HttpClient client = new HttpClient();
+                            var response = client.GetAsync(new Uri(bynDownUrl));
+                            response.Wait();
+                            using (var fs = new FileStream(Path.Combine(folderSelector.SelectedPath, $"{byn}byn.pdf"),FileMode.CreateNew))
+                            {
+                                response.Result.Content.CopyToAsync(fs).Wait();
+                            }
+                        }
+                        catch (Exception err)
+                        {
+                            downloadErrorOidsByn.Add(byn);
+                        }
+                    }
+
+                    foreach (var thk in tahakkuklar)
+                    {
+                        var thkDownUrl = "https://ebeyanname.gib.gov.tr/dispatch?";
+
+                        var queryParams = System.Web.HttpUtility.ParseQueryString(string.Empty);
+                        queryParams.Add("cmd", "IMAJ");
+                        queryParams.Add("subcmd", "BEYANNAMEGORUNTULE");
+                        queryParams.Add("TOKEN", token);
+                        queryParams.Add("beyannameOid", thk.Replace("thkPDF", ""));
+                        queryParams.Add("tahakkukOid", thk.Replace("thkPDF", ""));
+                        queryParams.Add("inline", "true");
+
+                        thkDownUrl += queryParams.ToString();
+
+                        try
+                        {
+                            HttpClient client = new HttpClient();
+                            var response = client.GetAsync(new Uri(thkDownUrl));
+                            response.Wait();
+                            using (var fs = new FileStream(Path.Combine(folderSelector.SelectedPath, $"{thk}thk.pdf"), FileMode.CreateNew))
+                            {
+                                response.Result.Content.CopyToAsync(fs).Wait();
+                            }
+                        }
+                        catch (Exception err)
+                        {
+                            downloadErrorOidsByn.Add(thk);
+                        }
+                    }
                 }
 
-                foreach (var thk in tahakkuklar)
-                {
-                    var thkDownUrl = "https://ebeyanname.gib.gov.tr/dispatch?";
-
-                    var queryParams = System.Web.HttpUtility.ParseQueryString(string.Empty);
-                    queryParams.Add("cmd", "IMAJ");
-                    queryParams.Add("subcmd", "BEYANNAMEGORUNTULE");
-                    queryParams.Add("TOKEN", token);
-                    queryParams.Add("beyannameOid", thk.Replace("thkPDF", ""));
-                    queryParams.Add("tahakkukOid", thk.Replace("thkPDF", ""));
-                    queryParams.Add("inline", "true");
-
-                    thkDownUrl += queryParams.ToString();
-
-                    Console.WriteLine($"Download = {thkDownUrl}");
-                }
-
+                MessageBox.Show($"Dosyaların indirilmesi tamamlandı , İndirilemeyen BYN = {downloadErrorOidsByn.Count} , İndirilemeyen THK = {downloadErrorOidsThk.Count}");
             }
             catch (Exception err)
             {

@@ -4,6 +4,9 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -37,6 +40,7 @@ namespace EArsivPortal.Helpers
                 action(item);
             }
         }
+
         public static void KillAllDrivers()
         {
             new[] { "geckodriver", "chromedriver", "operadriver" }.ForEach((x) =>
