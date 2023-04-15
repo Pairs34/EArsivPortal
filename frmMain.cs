@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using Downloader;
 using EArsivPortal.Helpers;
 using EArsivPortal.Model;
 using Newtonsoft.Json;
@@ -141,40 +142,6 @@ namespace EArsivPortal
                     return;
                 }
 
-                ChromeOptions driverOption = new ChromeOptions();
-                driverOption.AddArgument("--headless");
-
-                var driverService = ChromeDriverService.CreateDefaultService();
-                driverService.HideCommandPromptWindow = true;
-
-                driver = new ChromeDriver(driverService, driverOption);
-                driver.Url = "https://earsivportal.efatura.gov.tr/intragiris.html";
-                driver.WaitForPageLoad();
-
-                var username = driver.IsElementPresent(By.XPath("//input[@id='userid']"), 5);
-                var password = driver.IsElementPresent(By.XPath("//input[@id='password']"), 5);
-                var loginbtn = driver.IsElementPresent(By.XPath("//button[@name='action']"), 5);
-
-                username.SendKeys(txtUserName.Text);
-                password.SendKeys(txtPassword.Text);
-
-                loginbtn.Click();
-
-
-                driver.WaitForPageLoad();
-
-                Thread.Sleep(TimeSpan.FromSeconds(2));
-
-                var exist_url = new Uri(driver.Url);
-
-                string token = HttpUtility.ParseQueryString(exist_url.Query).Get("token");
-
-                if (String.IsNullOrWhiteSpace(token))
-                {
-                    MessageBox.Show("Token okunamadı");
-                    return;
-                }
-
                 var client = new RestClient("https://earsivportal.efatura.gov.tr/earsiv-services/dispatch");
                 client.Timeout = -1;
                 var request = new RestRequest(Method.POST);
@@ -189,16 +156,30 @@ namespace EArsivPortal
                 request.AddHeader("Sec-Fetch-Mode", "cors");
                 request.AddHeader("Sec-Fetch-Dest", "empty");
                 request.AddHeader("Referer",
-                    $"https://earsivportal.efatura.gov.tr/index.jsp?token={token}&v=1645275913735");
+                    $"https://earsivportal.efatura.gov.tr/index.jsp?token={txtEarsivToken.Text}");
                 request.AddHeader("Accept-Language", "tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7");
-                var date_request = new JObject();
-                date_request["baslangic"] = dtStartEarsiv.Text;
-                date_request["hourlySearchInterval"] = "NONE";
-                date_request["bitis"] = String.IsNullOrWhiteSpace(dtEndEarsiv.Text) == true
-                    ? dtStartEarsiv.Text
-                    : dtEndEarsiv.Text;
-                var body =
-                    $@"cmd=EARSIV_PORTAL_ADIMA_KESILEN_BELGELERI_GETIR&pageName=RG_ALICI_TASLAKLAR&token={token}&jp={HttpUtility.UrlEncode(date_request.ToString())}";
+
+                var body = String.Empty;
+                if (cbInvoiceType.SelectedIndex == 0)
+                {
+                    var date_request = new JObject();
+                    date_request["baslangic"] = dtStartEarsiv.Text;
+                    date_request["hourlySearchInterval"] = "NONE";
+                    date_request["bitis"] = String.IsNullOrWhiteSpace(dtEndEarsiv.Text) == true
+                        ? dtStartEarsiv.Text
+                        : dtEndEarsiv.Text;
+                    body = $@"cmd=EARSIV_PORTAL_ADIMA_KESILEN_BELGELERI_GETIR&pageName=RG_ALICI_TASLAKLAR&token={txtEarsivToken.Text}&jp={HttpUtility.UrlEncode(date_request.ToString())}";
+                }
+                else
+                {
+                    var date_request = new JObject();
+                    date_request["hangiTip"] = "5000/30000";
+                    date_request["baslangic"] = dtStartEarsiv.Text;
+                    date_request["bitis"] = String.IsNullOrWhiteSpace(dtEndEarsiv.Text) == true
+                        ? dtStartEarsiv.Text
+                        : dtEndEarsiv.Text;
+                    body = $@"cmd=EARSIV_PORTAL_TASLAKLARI_GETIR&pageName=RG_BASITTASLAKLAR&token={txtEarsivToken.Text}&jp={HttpUtility.UrlEncode(date_request.ToString())}";
+                }
                 request.AddParameter("application/x-www-form-urlencoded; charset=UTF-8", body,
                     ParameterType.RequestBody);
                 IRestResponse response = client.Execute(request);
@@ -207,7 +188,11 @@ namespace EArsivPortal
                     Fatura content = JsonConvert.DeserializeObject<Fatura>(response.Content);
                     aktarilan_faturalar = content.data;
                     File.WriteAllText(earsiv_fatura_json_path, response.Content);
-                    Globals.ViewAsExcel(content.data);
+
+                    if (content.data.Count > 0)
+                    {
+                        Globals.ViewAsExcel(content.data);
+                    }
                     portalGrid.DataSource = content.data;
                 }
             }
@@ -322,7 +307,7 @@ namespace EArsivPortal
                             HttpClient client = new HttpClient();
                             var response = client.GetAsync(new Uri(bynDownUrl));
                             response.Wait();
-                            using (var fs = new FileStream(Path.Combine(folderSelector.SelectedPath, $"{byn}byn.pdf"),FileMode.CreateNew))
+                            using (var fs = new FileStream(Path.Combine(folderSelector.SelectedPath, $"{byn}byn.pdf"), FileMode.CreateNew))
                             {
                                 response.Result.Content.CopyToAsync(fs).Wait();
                             }
@@ -372,7 +357,7 @@ namespace EArsivPortal
             }
         }
 
-        private string GetBtnLoginToken(string username,string password,string sifre)
+        private string GetBtnLoginToken(string username, string password, string sifre)
         {
             try
             {
@@ -462,6 +447,39 @@ namespace EArsivPortal
             {
                 return err.Message;
             }
+        }
+
+        private async void btnDownloadInvoice_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var downloadOpt = new DownloadConfiguration()
+                {
+                    ChunkCount = 8, // file parts to download, default value is 1
+                    ParallelDownload = true // download parts of file as parallel or not. Default value is false
+                };
+
+                var downloader = new DownloadService(downloadOpt);
+
+                var dialog = folderSelector.ShowDialog();
+                if (dialog == DialogResult.OK)
+                {
+                    var loadedInvoice = (portalGrid.DataSource) as List<Datum>;
+
+                    foreach (var datum in loadedInvoice)
+                    {
+                        string downloadFileUri = $"https://earsivportal.efatura.gov.tr/earsiv-services/download?token={txtEarsivToken.Text}&ettn={datum.ettn}&belgeTip=FATURA&onayDurumu=Onaylandı&cmd=EARSIV_PORTAL_BELGE_INDIR";
+
+                        await downloader.DownloadFileTaskAsync(downloadFileUri, $"{folderSelector.SelectedPath}\\{datum.ettn}.zip");
+                    }
+                }
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message);
+            }
+
+            MessageBox.Show("İndirme tamamlandı");
         }
     }
 }
