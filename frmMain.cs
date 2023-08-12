@@ -18,6 +18,8 @@ using System.Xml.Linq;
 using Downloader;
 using EArsivPortal.Helpers;
 using EArsivPortal.Model;
+using EArsivPortal.Model.AlisFatura;
+using EArsivPortal.Model.SatisFatura;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OpenQA.Selenium;
@@ -33,7 +35,8 @@ namespace EArsivPortal
     public partial class frmMain : Form
     {
         private IWebDriver driver;
-        private List<Datum> aktarilan_faturalar;
+        private List<Model.AlisFatura.Datum> aktarilan_alis_faturalari;
+        private List<Model.SatisFatura.Datum> aktarilan_satis_faturalari;
         private List<Faturasonuc> ivd_faturalar = new List<Faturasonuc>();
 
         private string earsiv_fatura_json_path =
@@ -52,8 +55,8 @@ namespace EArsivPortal
             if (File.Exists(earsiv_fatura_json_path))
             {
                 var fatura_json = File.ReadAllText(earsiv_fatura_json_path);
-                aktarilan_faturalar = JsonConvert.DeserializeObject<Fatura>(fatura_json).data;
-                portalGrid.DataSource = aktarilan_faturalar;
+                aktarilan_satis_faturalari = JsonConvert.DeserializeObject<SatisFatura>(fatura_json).data;
+                portalGrid.DataSource = aktarilan_satis_faturalari;
             }
 
             dtIvdEndDate.Value = DateTime.Now.GetLastDayOfMonth();
@@ -185,15 +188,31 @@ namespace EArsivPortal
                 IRestResponse response = client.Execute(request);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    Fatura content = JsonConvert.DeserializeObject<Fatura>(response.Content);
-                    aktarilan_faturalar = content.data;
-                    File.WriteAllText(earsiv_fatura_json_path, response.Content);
-
-                    if (content.data.Count > 0)
+                    if(cbInvoiceType.SelectedIndex == 0)
                     {
-                        Globals.ViewAsExcel(content.data);
+                        var content = JsonConvert.DeserializeObject<SatisFatura>(response.Content);
+                        aktarilan_satis_faturalari = content.data;
+                        File.WriteAllText(earsiv_fatura_json_path, response.Content);
+
+                        if (content.data.Count > 0)
+                        {
+                            Globals.ViewAsExcel(content.data);
+                        }
+                        portalGrid.DataSource = content.data;
                     }
-                    portalGrid.DataSource = content.data;
+                    else
+                    {
+                        var content = JsonConvert.DeserializeObject<AlisFatura>(response.Content);
+                        aktarilan_alis_faturalari = content.data;
+                        File.WriteAllText(earsiv_fatura_json_path, response.Content);
+
+                        if (content.data.Count > 0)
+                        {
+                            Globals.ViewAsExcel(content.data);
+                        }
+                        portalGrid.DataSource = content.data;
+                    }
+                    
                 }
             }
             catch (Exception exception)
@@ -213,7 +232,15 @@ namespace EArsivPortal
 
         private void btnExportEArsivData_Click(object sender, EventArgs e)
         {
-            Globals.ViewAsExcel(aktarilan_faturalar);
+            if(cbInvoiceType.SelectedIndex == 0)
+            {
+                Globals.ViewAsExcel(aktarilan_alis_faturalari);
+            }
+            else
+            {
+                Globals.ViewAsExcel(aktarilan_satis_faturalari);
+            }
+            
         }
 
         private void btnExportIVD_Click(object sender, EventArgs e)
@@ -232,7 +259,7 @@ namespace EArsivPortal
             var earsivFaturalar = File.ReadAllText(earsiv_fatura_json_path);
             var ivdFaturalar = File.ReadAllText(ivd_json_path);
 
-            var earsivObject = JsonConvert.DeserializeObject<Fatura>(earsivFaturalar);//Datum
+            var earsivObject = JsonConvert.DeserializeObject<SatisFatura>(earsivFaturalar);//Datum
             var ivdObject = JsonConvert.DeserializeObject<List<Faturasonuc>>(ivdFaturalar);
 
             List<EksikFatura> eksikFaturalar = new List<EksikFatura>();
@@ -464,7 +491,7 @@ namespace EArsivPortal
                 var dialog = folderSelector.ShowDialog();
                 if (dialog == DialogResult.OK)
                 {
-                    var loadedInvoice = (portalGrid.DataSource) as List<Datum>;
+                    var loadedInvoice = (portalGrid.DataSource) as List<Model.SatisFatura.Datum>;
 
                     foreach (var datum in loadedInvoice)
                     {
