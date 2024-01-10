@@ -335,7 +335,7 @@ namespace EArsivPortal
             txtBynSifre.Name = "txtBynSifre";
             txtBynSifre.Size = new System.Drawing.Size(100, 27);
             txtBynSifre.TabIndex = 38;
-            txtBynSifre.Text = "081752";
+            txtBynSifre.Text = "";
             // 
             // lblBynUsername
             // 
@@ -364,7 +364,7 @@ namespace EArsivPortal
             txtBynParola.Name = "txtBynParola";
             txtBynParola.Size = new System.Drawing.Size(100, 27);
             txtBynParola.TabIndex = 36;
-            txtBynParola.Text = "mersane";
+            txtBynParola.Text = "";
             // 
             // txtBynUsername
             // 
@@ -373,7 +373,7 @@ namespace EArsivPortal
             txtBynUsername.Name = "txtBynUsername";
             txtBynUsername.Size = new System.Drawing.Size(89, 27);
             txtBynUsername.TabIndex = 34;
-            txtBynUsername.Text = "62400018";
+            txtBynUsername.Text = "";
             // 
             // dtBynEndDate
             // 
